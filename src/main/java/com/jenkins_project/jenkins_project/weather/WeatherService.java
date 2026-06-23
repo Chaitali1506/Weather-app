@@ -38,7 +38,7 @@ public class WeatherService {
     private final ConcurrentHashMap<String, CacheEntry> cache = new ConcurrentHashMap<>();
 
     public WeatherService(
-            @Value("${openweathermap.api.key}") String apiKey,
+            @Value("${openweathermap.api.key:}") String apiKey,
             @Value("${openweathermap.api.base-url}") String apiBaseUrl,
             @Value("${openweathermap.api.default-city:London}") String defaultCity
     ) {
@@ -55,6 +55,10 @@ public class WeatherService {
     public WeatherResponse getWeather(String city, Double lat, Double lon) {
         if ((city == null || city.isBlank()) && (lat == null || lon == null)) {
             city = defaultCity;
+        }
+
+        if (apiKey.isBlank()) {
+            return getDemoWeather(city, lat, lon);
         }
 
         String cacheKey = buildCacheKey(city, lat, lon);
